@@ -1,0 +1,20 @@
+# Ignore Python virtual environments
+venv/
+.env/
+
+# Ignore Jupyter Notebook files
+*.ipynb
+
+# Ignore Python bytecode
+__pycache__/
+*.pyc
+
+# Ignore other files that might contain sensitive information or build artifacts
+.DS_Store   # macOS specific file system file
+*.log
+*.csv       # If you have CSV files that shouldn't be shared
+*.json      # If there are configuration files with sensitive data
+
+# Ignore specific directories that might be specific to your projects
+build/
+dist/
