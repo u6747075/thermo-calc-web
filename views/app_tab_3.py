@@ -30,8 +30,10 @@ def display_table_with_delete(df):
             data=csv,
             file_name='data.csv',
             mime='text/csv',
+            
         )
     with col1:
+        
         edit= st.toggle("Edit mode",key="edit",value=False)
 
     if edit:
