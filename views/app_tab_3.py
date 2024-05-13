@@ -32,6 +32,7 @@ def display_table_with_delete(df):
             mime='text/csv',
             
         )
+        
     with col1:
         
         edit= st.toggle("Edit mode",key="edit",value=False)
