@@ -7,12 +7,14 @@ def get_secret(secret_id, version_id='latest'):
     client = secretmanager.SecretManagerServiceClient()
 
     # build the resource name of the secret version
-    project_id = "thermo-calculator"#os.getenv('GOOGLE_CLOUD_PROJECT')
+    project_id = os.getenv('GOOGLE_CLOUD_PROJECT')
     print(project_id)
     name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
 
     # access the secret version
     response = client.access_secret_version(name=name)
+
+
 
     # return the decoded secret
     return response.payload.data.decode('UTF-8')

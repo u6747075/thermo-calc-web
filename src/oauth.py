@@ -3,6 +3,7 @@ import google_auth_oauthlib.flow
 from uuid import uuid4
 from googleapiclient.discovery import build
 from werkzeug.exceptions import Unauthorized
+import logging
 
 def _credentials_to_dict(credentials):
     """
@@ -23,6 +24,9 @@ def authorize(callback_uri, client_config, scopes):
     Builds the URL that will be used for redirection to Google
     to start the OAuth flow.
     """
+    if 'web' not in client_config and 'installed' not in client_config:
+        logging.error(client_config)
+        raise ValueError("OOps Client secrets must be for a web or installed app.")
 
     # specify the flow configuration details
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
@@ -38,10 +42,10 @@ def authorize(callback_uri, client_config, scopes):
     authorization_url, state = flow.authorization_url(
         # offline access allows access token refresh without reprompting the user
         # using online here to force log in
-        access_type='online',
+        access_type='offline',
         state=state,
         prompt='consent',
-        include_granted_scopes='false',
+        include_granted_scopes='true',
     )
 
     return authorization_url, state

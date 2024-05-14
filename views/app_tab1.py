@@ -9,26 +9,41 @@ import logging
 import pandas as pd
 from streamlit_file_browser import st_file_browser
 from src.utils.unscale_points import unscale_points
+import numpy as np
 from src.area_select.inference import get_temp_from_poly
+def pil_to_cv2(pil_image):
+    # Convert PIL image to RGB format
+    pil_image = pil_image.convert('RGB')
+    # Convert PIL image to numpy array
+    numpy_image = np.array(pil_image)
+    # Convert RGB to BGR (OpenCV format)
+    opencv_image = cv2.cvtColor(numpy_image, cv2.COLOR_RGB2BGR)
+    return opencv_image
 
 
-def file_selector(folder_path='.'):
-    filenames = os.listdir(folder_path)
+def file_selector(filenames):
+    # filenames = os.listdir(folder_path)
     selected_filename = st.selectbox('Select a file', filenames)
-    return os.path.join(folder_path, selected_filename)
+    image = Image.open(selected_filename)
+    st.image(Image.open(filenames[0]))
+    st.image(pil_to_cv2(image))
+
+    return selected_filename
 def select_folder():
     if "uploaded_files" not in st.session_state:
-        st.session_state["uploaded_files"]=[]
+        st.session_state["uploaded_files"]=None
         
-    uploaded_files = st.file_uploader("Upload files",type=["png","jpeg","jpg"],help="Supported file types:png, jpeg, jpg",accept_multiple_files=True)
+    uploaded_files = st.file_uploader("Upload files",type=["png","jpeg","jpg"],help="Supported file types:png, jpeg, jpg",accept_multiple_files=False)
+
     st.session_state["uploaded_files"]=uploaded_files
-    st.write(uploaded_files)
+    # st.write(st.session_state["uploaded_files"])
     print(uploaded_files)
 
-    return uploaded_files
+    return st.session_state["uploaded_files"]
     # st.file_uploader("Uploda")
 def display_image_and_edges(path):
-    image = cv2.imread(path)
+    image = Image.open(path)
+    image = pil_to_cv2(image)
     edges = detect_edges(image)
 
     return image,edges
@@ -75,7 +90,8 @@ def display_interactive_image(image,edge,min_temp,max_temp,mode=0,width=600,heig
                     st.session_state["points"].append(point)
                     value=None
                     st.rerun()
-            st.write(f"Ave:{avg_rgb_text} N-selection:{len( st.session_state['points'])} Outer Hist:{st.session_state['outer_hist']}")
+            st.write(f"Ave:{avg_rgb_text} N-selection:{len( st.session_state['outer_hist'])} ")
+            
             
       
 
@@ -117,27 +133,29 @@ def display_interactive_image(image,edge,min_temp,max_temp,mode=0,width=600,heig
             st.session_state["points"].append(point)
             logging.info(f"{st.session_state['points']=}")
             st.rerun()
+        st.write(f"Ave:{avg_rgb_text} N-selection:{len( st.session_state['points'])} Outer Hist:{st.session_state['outer_hist']}")
                 
-        st.write(f"Ave:{avg_rgb_text} N-selection:{len( st.session_state['outer_hist'])} ")
+    
     return avg_rgb_text,len( st.session_state["outer_hist"])
 def launch_thermo_images():
     max_temp = st.number_input("Max Temp: \n\n",key="max_temp",value=41.6)
     min_temp = st.number_input("Min Temp: \n\n",key="min_temp",value=22.6)
-    selection_mode = st.radio("Select the lmode \n\n",["Simple Area","Multi-Region"],key="selection_mode",horizontal=True)
+    selection_mode = st.radio("Select the lmode \n\n",["Multi-Region", "Simple Area"],key="selection_mode",horizontal=True,on_change=clear_cache)
     avg=count =0
 
     st.write('Asset Directory:')
     # clicked = st.button('Dir Picker')
     # if clicked:
         # dirname = st.text_input('Selected folder:', filedialog.askdirectory(master=root))
-    dirname = st.text_input('Selected folder:', value="/Users/Mahir/ChoY/thermo_note/assets")
-    folder_select_button = st.button("Select Folder")
+    # dirname = st.text_input('Selected folder:')
+    # folder_select_button = st.button("Select Folder")
+    filename = None
     # if folder_select_button:
-    selected_folder_path = select_folder()
+    filename = select_folder()
     # st.write(selected_folder_path)
-    if dirname:
+    if filename:
         
-        filename = file_selector(dirname)
+        # filename = file_selector(slected_files)
         first_tab1, first_tab2 = st.tabs(["Region Selector", "Edge and Original"])
         image,edges = display_image_and_edges(filename)
 
@@ -152,7 +170,7 @@ def launch_thermo_images():
                 st.image(rgb_image, caption='Original Image', use_column_width=True)
             with col2:
                 st.image(edges, caption='Edge Detected Image', use_column_width=True)
-    return filename, max_temp,min_temp,avg,count 
+    return (filename.name if filename else None), max_temp,min_temp,avg,count 
                 
 
 
