@@ -27,18 +27,18 @@ logging.basicConfig(level=logging.INFO)
 st.header("Thermo Calcs", divider="rainbow")
 
 st.session_state["outer_hist"]=[]
-tab1, tab2, tab4,tab3 = st.tabs(["Home", "Record","File Browser", "Colour Mapper"])
+tab1, tab2, = st.tabs(["Home", "Record"])
 
 with tab1:
     render_story_tab()
 from views.app_tab_3 import render_objects
 with tab2:
     render_objects()
-with tab3:
-    st.title("Coming soon")
+# with tab3:
+#     st.title("Coming soon")
     
-from views.app_tab_4 import login
-with tab4:
-    st.write("Coming soon")
-    # login()
+# # from views.app_tab_4 import login
+# with tab4:
+#     st.write("Coming soon")
+#     # login()
     
