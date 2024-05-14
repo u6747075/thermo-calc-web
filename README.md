@@ -21,20 +21,24 @@ ThermoImageProcessor is a Streamlit-based application designed to calculate the 
 To run the ThermoImageProcessor, follow these steps:
 
 1. **Clone the Repository**
-   \`\`\`sh
-   git clone https://github.com/yourusername/ThermoImageProcessor.git
-   cd ThermoImageProcessor
-   \`\`\`
+   ```sh
+   git clone https://github.com/u6747075/thermo-calc-web.git
+   cd thermo-calc-web.
+   ```
 
 2. **Install Dependencies**
-   \`\`\`sh
+   ```sh
    pip install -r requirements.txt
-   \`\`\`
+   ```
 
 3. **Run the Application**
-   \`\`\`sh
-   streamlit run app.py
-   \`\`\`
+   ```sh
+   streamlit run app.py      \
+     --browser.serverAddress=localhost \
+     --server.enableCORS=false \
+     --server.enableXsrfProtection=false \
+     --server.port 8080
+   ```
 
 ## Usage
 
@@ -66,10 +70,10 @@ The Canny edge detection algorithm is a multi-stage process to detect a wide ran
 
 1. **Noise Reduction**: The image is first smoothed using a Gaussian filter to reduce noise. This step helps in minimizing false edges caused by noise.
 
-    \`\`\`python
+    ```python
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (7, 7), 0)
-    \`\`\`
+    ```
 
 2. **Gradient Calculation**: The gradient intensity and direction are calculated using Sobel operators. This step helps in identifying areas of rapid intensity change which correspond to edges.
 
@@ -79,20 +83,20 @@ The Canny edge detection algorithm is a multi-stage process to detect a wide ran
 
 5. **Edge Tracking by Hysteresis**: Weak edges are included in the final edge image if and only if they are connected to strong edges. This step helps in suppressing noise while preserving true edges.
 
-    \`\`\`python
+    ```python
     edges = cv2.Canny(blurred, 55, 100)
-    \`\`\`
+    ```
 
 6. **Dilation**: After detecting edges using the Canny algorithm, dilation is applied to enhance the edges, making them more prominent and easier to work with for region selection.
 
-    \`\`\`python
+    ```python
     kernel = np.ones((3, 3), np.uint8)
     dilated_edges = cv2.dilate(edges, kernel, iterations=1)
-    \`\`\`
+    ```
 
 ### Complete Edge Detection Code
 
-\`\`\`python
+```python
 def detect_edges(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (7, 7), 0)
@@ -100,7 +104,7 @@ def detect_edges(image):
     kernel = np.ones((3, 3), np.uint8)
     dilated_edges = cv2.dilate(edges, kernel, iterations=1)
     return dilated_edges
-\`\`\`
+```
 
 ### Research Papers
 
