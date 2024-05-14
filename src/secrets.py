@@ -16,3 +16,4 @@ def get_secret(secret_id, version_id='latest'):
 
     # return the decoded secret
     return response.payload.data.decode('UTF-8')
+
