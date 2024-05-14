@@ -7,13 +7,26 @@ from PIL import Image, ImageDraw
 from streamlit_image_coordinates import streamlit_image_coordinates
 import logging 
 import pandas as pd
+from streamlit_file_browser import st_file_browser
 from src.utils.unscale_points import unscale_points
 from src.area_select.inference import get_temp_from_poly
+
+
 def file_selector(folder_path='.'):
     filenames = os.listdir(folder_path)
     selected_filename = st.selectbox('Select a file', filenames)
     return os.path.join(folder_path, selected_filename)
+def select_folder():
+    if "uploaded_files" not in st.session_state:
+        st.session_state["uploaded_files"]=[]
+        
+    uploaded_files = st.file_uploader("Upload files",type=["png","jpeg","jpg"],help="Supported file types:png, jpeg, jpg",accept_multiple_files=True)
+    st.session_state["uploaded_files"]=uploaded_files
+    st.write(uploaded_files)
+    print(uploaded_files)
 
+    return uploaded_files
+    # st.file_uploader("Uploda")
 def display_image_and_edges(path):
     image = cv2.imread(path)
     edges = detect_edges(image)
@@ -62,7 +75,7 @@ def display_interactive_image(image,edge,min_temp,max_temp,mode=0,width=600,heig
                     st.session_state["points"].append(point)
                     value=None
                     st.rerun()
-            st.write(f"Ave:{avg_rgb_text} N-selection:{len( st.session_state["points"])} Outer Hist:{st.session_state["outer_hist"]}")
+            st.write(f"Ave:{avg_rgb_text} N-selection:{len( st.session_state['points'])} Outer Hist:{st.session_state['outer_hist']}")
             
       
 
@@ -85,7 +98,7 @@ def display_interactive_image(image,edge,min_temp,max_temp,mode=0,width=600,heig
             apply_ui(closest_outer)
             
             avg_rgb_text = aggregate_rgb_values(image.copy(),contours,hierarchy, st.session_state["outer_hist"],float(min_temp),float(max_temp))
-            logging.info(f"Ave:{avg_rgb_text} N-selection:{len( st.session_state["outer_hist"])} Outer Hist:{st.session_state["outer_hist"]}")
+            logging.info(f"Ave:{avg_rgb_text} N-selection:{len( st.session_state['outer_hist'])} Outer Hist:{st.session_state['outer_hist']}")
             
             # st.session_state["points"]=None
 
@@ -102,10 +115,10 @@ def display_interactive_image(image,edge,min_temp,max_temp,mode=0,width=600,heig
 
             # if point not in st.session_state["points"]:
             st.session_state["points"].append(point)
-            logging.info(f"{st.session_state["points"]=}")
+            logging.info(f"{st.session_state['points']=}")
             st.rerun()
                 
-        st.write(f"Ave:{avg_rgb_text} N-selection:{len( st.session_state["outer_hist"])} Outer Hist:{st.session_state["outer_hist"]}")
+        st.write(f"Ave:{avg_rgb_text} N-selection:{len( st.session_state['outer_hist'])} ")
     return avg_rgb_text,len( st.session_state["outer_hist"])
 def launch_thermo_images():
     max_temp = st.number_input("Max Temp: \n\n",key="max_temp",value=41.6)
@@ -118,6 +131,10 @@ def launch_thermo_images():
     # if clicked:
         # dirname = st.text_input('Selected folder:', filedialog.askdirectory(master=root))
     dirname = st.text_input('Selected folder:', value="/Users/Mahir/ChoY/thermo_note/assets")
+    folder_select_button = st.button("Select Folder")
+    # if folder_select_button:
+    selected_folder_path = select_folder()
+    # st.write(selected_folder_path)
     if dirname:
         
         filename = file_selector(dirname)

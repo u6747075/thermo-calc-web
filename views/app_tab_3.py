@@ -10,18 +10,7 @@ def delete_row(index):
 
 # Display the DataFrame with a delete button for each row
 def display_table_with_delete(df):
-    # for index, row in df.iterrows():
-    #     cols = st.columns([0.2, 1, 1, 1, 1, 1, 1, 1])
-    #     delete_button = cols[0].button("D", key=f"delete_{index}")
-    #     if delete_button:
-    #         delete_row(index)
-    #         st.experimental_rerun()
-    #     cols[1].write(row['title'])
-    #     cols[2].write(row['max_temp'])
-    #     cols[3].write(row['min_temp'])
-    #     cols[4].write(row['selected_average'])
-    #     cols[5].write(row['n_regions'])
-    #     cols[6].write(row['note'])
+
     csv = convert_df_to_csv(st.session_state['data'])
     col1, col2 = st.columns(2)
     with col2:
