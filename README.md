@@ -39,6 +39,10 @@ To run the ThermoImageProcessor, follow these steps:
      --server.enableXsrfProtection=false \
      --server.port 8080
    ```
+4. **Docker**
+
+    If you prefer to use Docker, a Dockerfile is provided.
+
 
 ## Usage
 
